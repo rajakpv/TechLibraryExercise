@@ -1,22 +1,6 @@
 <template>
-    <div v-if="book">
-        <b-card :title="book.title"
-                :img-src="book.thumbnailUrl"
-                img-alt="Image"
-                img-top
-                tag="article"
-                style="max-width: 30rem;"
-                class="mb-2">
-            <b-card-text>
-                {{ book.descr }}
-            </b-card-text>
- <div class="modal-footer">
-            <b-button to="/" variant="primary">Back</b-button>
-            <b-button v-b-toggle.collapse-1 variant="primary">Edit</b-button> </div>
-        </b-card>
-  <b-collapse id="collapse-1" class="mt-2">
-    <form  id="bookStore"  @submit="validateForm()">
-    <div v-if="book">
+<form  id="bookStore"  @submit="validateForm()">    
+    <div >
       <div>
         <h2>First Name</h2>
         <input type="text" class="form-control form-control-sm" v-model="book.title" placeholder="edit me"/>
@@ -28,7 +12,7 @@
       </div>
 
        <div>
-        <h2>Description</h2>
+        <h2>Description</h2>        
         <textarea class="md-textarea form-control" v-model="book.descr"/>
       </div>
 
@@ -38,12 +22,10 @@
       </div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary" @click.stop.prevent="submit(book)" >Save changes</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="Cancel()">Cancel</button>        
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="Cancel()">Cancel</button>       
       </div>
     </div>
     </form>
-  </b-collapse>
-    </div>    
 </template>
 
 <script>
@@ -53,13 +35,18 @@ export default {
   name: "Book",
   props: ["id"],
   data: () => ({
-    book: null
+    book: {}
   }),
   mounted() {
     axios.get(`https://localhost:5001/books/${this.id}`).then(response => {
-      this.book = response.data;
+      if (response.data != null && response.data != "") {
+        this.book = response.data;
+      } else {
+        this.book = {};
+      }
     });
   },
+
   methods: {
     validateForm: function(e) {
       if (this.book.title && this.book.isbn) {
@@ -79,12 +66,21 @@ export default {
     },
 
     submit(book1) {
+      var test = book1;
       book1.ShortDescr = book1.descr;
-      axios({
-        method: "post",
-        url: "https://localhost:5001/Books/UpdateBook/",
-        data: book1
-      });
+      if (book1.bookId > 0) {
+        axios({
+          method: "post",
+          url: "https://localhost:5001/Books/UpdateBook/",
+          data: book1
+        });
+      } else {
+        axios({
+          method: "post",
+          url: "https://localhost:5001/Books/AddBook/",
+          data: book1
+        });
+      }
       this.$router.push("/");
     },
     Cancel() {

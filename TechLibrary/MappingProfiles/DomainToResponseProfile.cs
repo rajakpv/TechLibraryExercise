@@ -8,7 +8,7 @@ namespace TechLibrary.MappingProfiles
     {
         public DomainToResponseProfile()
         {
-            CreateMap<Book, BookResponse>().ForMember(x => x.Descr, opt => opt.MapFrom(src => src.ShortDescr));
+            CreateMap<Book, BookResponse>().ForMember(x => x.Descr, opt => opt.MapFrom(src => src.ShortDescr));            
         }
     }
 }
